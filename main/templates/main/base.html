@@ -3,439 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}UX CRAFT{% endblock %}</title>
+    <title>{% block title %}ПЕНТЕСТ: АНАЛИЗ УГРОЗ{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --color-primary-green: #B0C18E;
-            --color-light-beige-green: #EBF0E3;
-            --color-dark-accent-green: #6B8E23;
-            --color-dark-text: #333333;
-            --color-medium-text: #666666;
-            --color-light-text: #888888;
-            --color-footer-background: #4A533A;
-            --color-sidebar-bg: var(--color-light-beige-green);
-            --color-sidebar-text: var(--color-dark-text);
-            --color-sidebar-active-glow: var(--color-dark-accent-green);
-        }
 
-        html {
-            scroll-behavior: smooth;
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Базовые стили и фоны */
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            height: 100%;
+            overflow-y: auto; /* Явно разрешаем вертикальную прокрутку для всего документа */
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-light-beige-green);
-            color: var(--color-dark-text);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-
-            display: flex;
-            flex-direction: row;
-            min-height: 100vh;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            padding-top: 70px;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Roboto Mono', monospace; /* Основной шрифт */
+            @apply bg-gray-950 text-lime-400 antialiased; /* Темный фон, ярко-зеленый текст */
+            /* Фон с сеткой для "хакерского" вида */
+            background:
+                linear-gradient(rgba(10, 10, 10, 0.95), rgba(10, 10, 10, 0.95)), /* Темный оверлей */
+                url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><g stroke="rgba(0, 255, 0, 0.1)" stroke-width="1"><rect x="0" y="0" width="16" height="16" fill="rgba(0, 255, 0, 0.02)" /><line x1="0" y1="0" x2="16" y2="16" /><line x1="16" y1="0" x2="0" y2="16" /></g></svg>') repeat;
+            background-size: cover, 16px 16px; /* Размер для паттерна */
+            display: flex; /* Делаем body флекс-контейнером */
+            flex-direction: column; /* Располагаем элементы внутри body вертикально */
         }
 
-        .fade-in-section {
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        /* Анимации для "хакерского" режима */
+        @keyframes text-glitch {
+            0% { text-shadow: 0 0 3px rgba(0, 255, 0, 0.7); transform: translate(0, 0); }
+            25% { text-shadow: 2px 2px 5px rgba(255, 0, 0, 0.5), -2px -2px 5px rgba(0, 255, 0, 0.5); transform: translate(1px, -1px); }
+            50% { text-shadow: 0 0 3px rgba(0, 255, 0, 0.7); transform: translate(0, 0); }
+            75% { text-shadow: -2px 2px 5px rgba(255, 0, 0, 0.5), 2px -2px 5px rgba(0, 255, 0, 0.5); transform: translate(-1px, 1px); }
+            100% { text-shadow: 0 0 3px rgba(0, 255, 0, 0.7); transform: translate(0, 0); }
         }
 
-        .fade-in-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes scan-line {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(200%); }
         }
 
-        header {
-            background-color: var(--color-primary-green);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(5px);
-            position: fixed;
-            top: 0;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 40;
-            left: 0;
-            width: 100%;
+        @keyframes terminal-blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
 
-        @media (min-width: 768px) {
-            header {
-                left: 16rem;
-                width: calc(100% - 16rem);
-            }
-            .hamburger-button {
-                display: none;
-            }
-            .header-logo {
-                display: none;
-            }
+        .main-header-title {
+            font-family: 'Orbitron', sans-serif; /* Футуристичный шрифт для заголовка */
+            @apply text-6xl md:text-7xl font-extrabold tracking-widest;
+            color: #00ff00; /* Ярко-зеленый текст */
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.6); /* Неоновое свечение */
+            /* animation: text-glitch 4s infinite alternate ease-in-out; */ /* Анимация удалена по запросу */
         }
 
-        .header-logo {
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
-        .header-logo img {
-            height: 48px;
-            width: auto;
-            border-radius: 8px;
-            animation: logoPopIn 0.8s ease-out forwards;
-        }
-
-        .hamburger-button {
-            display: block;
-            color: var(--color-dark-text);
-        }
-
-        .sidebar {
-            width: 16rem;
-            background-color: var(--color-sidebar-bg);
-            color: var(--color-sidebar-text);
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-            padding-top: 1rem;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        @media (max-width: 767px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-        }
-
-        .sidebar-logo-section {
-            padding: 0.5rem 1rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        .main-header-subtitle {
+            font-family: 'Roboto Mono', monospace; /* Шрифт терминала для подзаголовка */
+            @apply text-3xl md:text-4xl font-light opacity-80 mt-4;
+            color: #71eeb8; /* Более светлый зеленый */
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
             position: relative;
+            display: inline-block;
         }
-        .sidebar-logo-section img {
-            width: 150px;
-            height: 90px;
-            margin: 0 auto 10px;
-            object-fit: fill;
-        }
-        .sidebar-logo-section h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--color-dark-text);
-            letter-spacing: 1px;
+        .main-header-subtitle::after {
+            content: '_';
+            animation: terminal-blink 1s steps(1, end) infinite;
+            margin-left: 5px;
         }
 
-        .sidebar-nav-list {
-            list-style: none;
-            padding: 0 1rem;
-            margin: 0;
-            flex-grow: 1;
-        }
-        .sidebar-nav-item {
-            margin-bottom: 0.5rem;
+        /* Общие стили для секций */
+        section {
+            @apply bg-gray-900 rounded-lg shadow-xl mb-16 p-8 transform transition-all duration-500 ease-in-out;
+            border: 1px solid #004d00; /* Темно-зеленая рамка */
             position: relative;
-            z-index: 1;
+            overflow: hidden; /* Скрываем выходящие за рамки элементы, такие как линии сканирования */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); /* Легкое свечение по умолчанию */
         }
-        .sidebar-nav-item a {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--color-sidebar-text);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 500;
-            transition: all 0.3s ease-in-out;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
+        section:hover {
+            border-color: #00ff00; /* Ярко-зеленая рамка при наведении */
+            transform: translateY(-5px); /* Легкий подъем */
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5); /* Более сильное свечение */
         }
-        .sidebar-nav-item a i, .sidebar-nav-item a span {
-            margin-right: 0.75rem;
-        }
-        .sidebar-nav-item a i {
-            font-size: 1rem;
-            color: var(--color-dark-text);
-        }
-
-        .sidebar-nav-item a::before {
+        section::before { /* Эффект сканирующей линии */
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(107, 142, 35, 0.4), transparent);
-            opacity: 0;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: all 0.4s ease-out;
-            z-index: -1;
-        }
-        .sidebar-nav-item a:hover {
-            color: white;
-            background-color: var(--color-dark-accent-green);
-            box-shadow: 0 0 15px rgba(107, 142, 35, 0.5);
-        }
-        .sidebar-nav-item a:hover i {
-            color: white;
-        }
-        .sidebar-nav-item a:hover::before {
-            opacity: 1;
-            transform: scaleX(1);
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.5), transparent);
+            animation: scan-line 3s infinite linear;
+            opacity: 0.7;
         }
 
-        .sidebar-nav-item a.active {
-            background-color: var(--color-dark-accent-green);
-            color: white;
-            box-shadow: 0 0 15px rgba(107, 142, 35, 0.7);
-            font-weight: 700;
+
+        /* Заголовки секций */
+        .section-title {
+            font-family: 'Orbitron', sans-serif; /* Футуристичный шрифт для заголовков секций */
+            @apply text-5xl font-bold text-center mb-10 pb-4 border-b-2;
+            border-color: #008000; /* Темно-зеленая полоса под заголовком */
+            color: #00ff00; /* Ярко-зеленый цвет текста */
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6); /* Неоновое свечение */
+            letter-spacing: 0.05em;
+            position: relative;
         }
-        .sidebar-nav-item a.active i {
-            color: white;
-        }
-        .sidebar-nav-item a.active::before {
-            opacity: 1;
-            transform: scaleX(1);
+        .section-title:after { /* Дополнительная линия */
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 2px;
+            background-color: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
         }
 
-        .sidebar-footer {
-            padding: 1rem;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--color-medium-text);
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        /* Sidebar */
+        .sidebar-nav {
+            background: linear-gradient(180deg, #050505, #151515);
+            border-right: 2px solid #004d00; /* Темно-зеленая граница */
+            box-shadow: 8px 0 20px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-nav:before { /* Декоративная линия сверху */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: scan-line 4s infinite linear; /* Используем ту же анимацию сканирования */
         }
 
-        .main-content-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--color-light-beige-green);
-            min-height: calc(100vh - 70px);
-            box-sizing: border-box;
+        /* Стиль для ссылок боковой навигации */
+        .sidebar-nav ul {
+            padding-top: 1rem;
+        }
+        .sidebar-nav li {
+            margin-bottom: 1rem;
+        }
+        .sidebar-nav a {
+            @apply flex items-center p-4 rounded-md text-xl font-medium transition-all duration-300 ease-in-out transform relative; /* Убрал overflow-hidden отсюда */
+            color: #71eeb8; /* Более светлый зеленый */
+            position: relative;
+            z-index: 1;
+            border: 1px solid transparent;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.05);
+            padding-left: 1.5rem; /* Увеличил паддинг */
+            padding-right: 1.5rem; /* Увеличил паддинг */
+            white-space: nowrap;
+        }
+        .sidebar-nav a:hover {
+            transform: translateY(-2px); /* Убрал scale */
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); /* Слегка уменьшил свечение */
+            border-color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.05); /* Легкий зеленый фон при наведении */
         }
 
+        /* Стиль активной ссылки */
+        .sidebar-nav a.active-link {
+            background: linear-gradient(90deg, rgba(0, 255, 0, 0.3), rgba(0, 255, 0, 0.1));
+            @apply text-white border-l-4;
+            border-color: #00ff00; /* Ярко-зеленый активный индикатор */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); /* Слегка уменьшил свечение */
+            /* Убрал transform: scale(1.02); */
+        }
+
+        .sidebar-nav a .emoji {
+            @apply mr-4 text-3xl;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.5));
+            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+            flex-shrink: 0; /* Не даем эмодзи сжиматься */
+        }
+        .sidebar-nav a:hover .emoji {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 10px #00ff00);
+        }
+        .sidebar-nav a.active-link .emoji {
+            transform: scale(1.3);
+            filter: drop-shadow(0 0 15px #00ff00);
+        }
+
+        .sidebar-nav a .link-text {
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease-in-out;
+        }
+        .sidebar-nav a:hover .link-text {
+        }
+
+
+        /* Адаптивный дизайн */
         @media (min-width: 768px) {
-            .main-content-area {
-                margin-left: 16rem;
-                width: calc(100% - 16rem);
+            .sidebar-nav {
+                width: 300px;
+                flex-shrink: 0;
+                position: fixed;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                z-index: 30;
+                padding-top: 3rem;
+            }
+            .content-wrapper {
+                margin-left: 300px;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
             }
         }
-
-        main {
-            flex-grow: 1;
-            padding: 1.5rem;
-            box-sizing: border-box;
+        @media (max-width: 767px) {
+            .sidebar-nav {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 1rem;
+                border-right: none;
+                border-bottom: 2px solid #004d00;
+                border-radius: 0 0 1.5rem 1.5rem;
+            }
+            .sidebar-nav ul {
+                flex-direction: row;
+                justify-content: space-around;
+                flex-wrap: wrap; /* Разрешаем перенос элементов, чтобы они умещались */
+                gap: 0.5rem;
+            }
+            .sidebar-nav li {
+                flex-grow: 1;
+                max-width: 30%; /* Устанавливаем максимальную ширину для элементов списка */
+                min-width: 70px;
+            }
+            .sidebar-nav a {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 0.5rem;
+                height: 100%;
+                white-space: normal; /* Разрешаем перенос текста на мобильных */
+                word-break: break-word; /* Позволяем ломать слова, если они слишком длинные */
+                text-align: center;
+            }
+            .sidebar-nav a .emoji {
+                margin-right: 0;
+                margin-bottom: 0.25rem;
+                font-size: 2rem;
+            }
+            .sidebar-nav a .link-text {
+                font-size: 0.7rem;
+                text-align: center;
+            }
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 1rem;
+            }
+            header { border-radius: 0; }
+            footer { border-radius: 0; }
         }
 
-        .mobile-menu-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 45;
+        .image-gallery-item {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            @apply rounded-md transition-transform duration-400 ease-in-out;
+            filter: brightness(0.4) contrast(1.5) grayscale(0.9); /* Более агрессивный "хакерский" фильтр */
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2); /* Внутренняя тень */
+        }
+        .image-gallery-item-wrapper {
+            @apply relative group rounded-md overflow-hidden shadow-lg border border-gray-800;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.1);
+        }
+        .image-gallery-item-wrapper:hover .image-gallery-item {
+            transform: scale(1.05); /* Меньше увеличение при наведении */
+            filter: brightness(0.8) contrast(1.2) grayscale(0.5); /* Немного меньше "хакерский" эффект */
+        }
+        .overlay-text {
+            @apply absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400;
+            backdrop-filter: blur(3px);
+            color: #00ff00; /* Ярко-зеленый текст */
+            text-shadow: 0 0 8px #00ff00;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+
+        /* Анимация появления секций */
+        .section-hidden {
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transform: translateY(40px);
+            filter: blur(3px);
         }
-        .mobile-menu-overlay.visible {
-            display: block;
+        .section-visible {
             opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
         }
+
+        /* Дополнительные тени для футера и хедера */
+        header {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8), inset 0 -3px 10px rgba(0, 255, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            border-color: #004d00; /* Граница хедера */
+        }
+        header:before { /* Сетка на хедере */
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.08) 0 1px, transparent 1px 100%),
+                repeating-linear-gradient(90deg, rgba(0, 255, 0, 0.08) 0 1px, transparent 1px 100%);
+            background-size: cover, 10px 10px, 10px 10px;
+            opacity: 0.4;
+            animation: grid-pulse 10s infinite alternate;
+        }
+        @keyframes grid-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.6; }
+        }
+        header .container { position: relative; z-index: 1; }
 
         footer {
-            background-color: var(--color-footer-background);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            border-top-left-radius: 40px;
-            border-top-right-radius: 40px;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-            margin-top: auto;
-            flex-shrink: 0;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8), inset 0 3px 10px rgba(0, 255, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            border-color: #004d00; /* Граница футера */
         }
-
-        @keyframes logoPopIn {
-            0% { opacity: 0; transform: scale(0.5) translateY(-20px); }
-            80% { opacity: 1; transform: scale(1.05) translateY(5px); }
-            100% { transform: scale(1) translateY(0); }
+        footer:before { /* Сетка на футере */
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.08) 0 1px, transparent 1px 100%),
+                repeating-linear-gradient(90deg, rgba(0, 255, 0, 0.08) 0 1px, transparent 1px 100%);
+            background-size: cover, 10px 10px, 10px 10px;
+            opacity: 0.3;
         }
+        footer .container { position: relative; z-index: 1; }
 
     </style>
-    {% block extra_head %}
-    {% endblock %}
 </head>
-<body>
-    <header>
-        <div class="header-logo">
+<body class="flex min-h-screen">
 
+    <nav class="sidebar-nav p-6 z-30">
+        <div class="text-center mb-10">
+            <span class="text-6xl mb-3 block">&#128172;</span> {# Иконка "хакера" (череп с костями) или щит #}
+            <h2 class="text-2xl font-bold text-lime-300 leading-tight font-orbitron tracking-wide" style="text-shadow: 0 0 10px rgba(0,255,0,0.5);">Ural Cyber Security</h2>
         </div>
-        <div class="flex-grow flex justify-end items-center">
-        </div>
-        <div class="md:hidden">
-            <button id="open-mobile-menu" class="hamburger-button focus:outline-none">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-        </div>
-    </header>
-
-    <aside id="sidebar-menu" class="sidebar">
-
-        <div class="sidebar-logo-section">
-<a href="{% url 'index' %}">
-                <img src="/static/img/design-Photoroom.png" alt="UX Craft">
-            </a>
-            <button id="close-mobile-menu" class="absolute top-4 right-4 md:hidden text-gray-800 focus:outline-none">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <ul class="sidebar-nav-list">
-            <li class="sidebar-nav-item">
-                <a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
-                    <i class="fas fa-home"></i> <span>Главная</span>
+        <ul class="flex flex-col">
+            <li>
+                <a href="{% url 'index' %}"
+                   class="{% if request.resolver_match.url_name == 'index' %}active-link{% endif %}">
+                    <span class="emoji">&#128187;</span> <span class="link-text">Панель Управления</span>
                 </a>
             </li>
-            <li class="sidebar-nav-item">
-                <a href="{% url 'general_statistics' %}" class="{% if request.resolver_match.url_name == 'general_statistics' %}active{% endif %}">
-                    <i class="fas fa-chart-line"></i> <span>Общая статистика</span>
+            <li>
+                <a href="{% url 'general_statistics' %}"
+                   class="{% if request.resolver_match.url_name == 'general_statistics' %}active-link{% endif %}">
+                    <span class="emoji">&#128200;</span> <span class="link-text">Обзор Угроз</span>
                 </a>
             </li>
-            <li class="sidebar-nav-item">
-                <a href="{% url 'demand_page' %}" class="{% if request.resolver_match.url_name == 'demand_page' %}active{% endif %}">
-                    <i class="fas fa-chart-bar"></i> <span>Востребованность</span>
+            <li>
+                <a href="{% url 'demand_page' %}"
+                   class="{% if request.resolver_match.url_name == 'demand_page' %}active-link{% endif %}">
+                    <span class="emoji">&#128274;</span> <span class="link-text">Анализ Уязвимостей</span>
                 </a>
             </li>
-            <li class="sidebar-nav-item">
-                <a href="{% url 'geography_statistics' %}" class="{% if request.resolver_match.url_name == 'geography_statistics' %}active{% endif %}">
-                    <i class="fas fa-globe"></i> <span>География</span>
+            <li>
+                <a href="{% url 'geography_statistics' %}"
+                   class="{% if request.resolver_match.url_name == 'geography_statistics' %}active-link{% endif %}">
+                    <span class="emoji">&#127757;</span> <span class="link-text">География</span>
                 </a>
             </li>
-            <li class="sidebar-nav-item">
-                <a href="{% url 'skills_statistics' %}" class="{% if request.resolver_match.url_name == 'skills_statistics' %}active{% endif %}">
-                    <i class="fas fa-brain"></i> <span>Навыки</span>
+            <li>
+                <a href="{% url 'skills_statistics' %}"
+                   class="{% if request.resolver_match.url_name == 'skills_statistics' %}active-link{% endif %}">
+                    <span class="emoji">&#128161;</span> <span class="link-text">Скиллы</span>
                 </a>
             </li>
-            <li class="sidebar-nav-item">
-                <a href="{% url 'latest_vacancies' %}" class="{% if request.resolver_match.url_name == 'latest_vacancies' %}active{% endif %}">
-                    <i class="fas fa-briefcase"></i> <span>Вакансии</span>
+            <li>
+                <a href="{% url 'latest_vacancies' %}"
+                   class="{% if request.resolver_match.url_name == 'latest_vacancies' %}active-link{% endif %}">
+                    <span class="emoji">&#128188;</span> <span class="link-text">Карьера в ИБ</span>
                 </a>
             </li>
         </ul>
-        <div class="sidebar-footer">
-            <p>&copy; 2025 UX Craft</p>
-        </div>
-    </aside>
+    </nav>
 
-    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+    {# Этот div теперь содержит весь контент, который появляется справа от сайдбара #}
+    <div class="flex flex-col flex-1 content-wrapper">
+        <header class="bg-gradient-to-r from-gray-900 to-black text-lime-400 p-8 shadow-2xl text-center rounded-bl-lg border-b-2 border-lime-700">
+            <div class="container mx-auto px-4">
+                <h1 class="main-header-title mb-3">
+                    ПЕНТЕСТ: АНАЛИЗ УГРОЗ
+                </h1>
+                <span class="main-header-subtitle">
+                    — ИНФОРМАЦИОННАЯ БЕЗОПАСНОСТЬ
+                </span>
+            </div>
+        </header>
 
-    <div class="main-content-area">
-        <main>
+        <main class="flex-1 p-4 md:p-10">
             {% block content %}
             {% endblock %}
         </main>
 
-        <footer>
-            <p>2025 UX Craft.</p>
-            <p class="mt-2 text-sm">
-                <p class="hover:text-gray-300 transition-colors duration-300">Дымшакова Мария Денисовна РИ-231002</p>
-            </p>
+        <footer class="bg-gray-950 text-gray-500 py-6 text-center shadow-inner mt-auto rounded-tl-lg border-t-2 border-lime-700">
+            <div class="container mx-auto px-4">
+                <p class="mb-2 text-sm">&copy; 2025 Pentest. Все права защищены.</p>
+                <p class="text-xs opacity-70">Разработано: Дончев Алексей РИ-231003</p>
+            </div>
         </footer>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const openMenuBtn = document.getElementById('open-mobile-menu');
-            const closeMenuBtn = document.getElementById('close-mobile-menu');
-            const mobileMenuSidebar = document.getElementById('sidebar-menu');
-            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-
-            function openMobileMenu() {
-                mobileMenuSidebar.classList.add('open');
-                mobileMenuOverlay.classList.add('visible');
-            }
-
-            function closeMobileMenu() {
-                mobileMenuSidebar.classList.remove('open');
-                mobileMenuOverlay.classList.remove('visible');
-            }
-
-            if (openMenuBtn) {
-                openMenuBtn.addEventListener('click', openMobileMenu);
-            }
-
-            if (closeMenuBtn) {
-                closeMenuBtn.addEventListener('click', closeMobileMenu);
-            }
-
-            if (mobileMenuOverlay) {
-                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
-            }
-
-            mobileMenuSidebar.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', closeMobileMenu);
-            });
-
-            const sections = document.querySelectorAll('.fade-in-section');
-
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
-            };
-
-            const sectionObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, observerOptions);
-
-            sections.forEach(section => {
-                sectionObserver.observe(section);
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.sidebar-nav-item a');
-
-            navLinks.forEach(link => {
-                const linkPath = link.getAttribute('href').split('?')[0];
-
-                if (linkPath === currentPath) {
-                    link.classList.add('active');
-                } else if (currentPath === '/' && linkPath === '{% url "index" %}') {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

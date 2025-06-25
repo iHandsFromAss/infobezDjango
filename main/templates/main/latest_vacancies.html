@@ -1,123 +1,132 @@
 {% extends 'main/base.html' %}
 
-{% block title %}Последние вакансии{% endblock %}
+{% block title %}Карьера в ИБ{% endblock %}
 
 {% block content %}
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f0e0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        .header-bg {
-            background-color: #b0c4b0;
-        }
-        .sidebar-bg {
-            background-color: #d0e0d0;
-            border-right: 2px solid #80a080;
-        }
-        .content-area-bg {
-            background-color: #ffffff;
-            border: 2px solid #80a080;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .line {
-            height: 2px;
-            background-color: #80a080;
-        }
-
-
-        @keyframes pulse-border {
-            0% { border-color: rgba(128, 160, 128, 0.5); box-shadow: 0 0 0px rgba(128, 160, 128, 0.4); }
-            50% { border-color: rgba(176, 196, 176, 0.8); box-shadow: 0 0 20px rgba(176, 196, 176, 0.6); }
-            100% { border-color: rgba(128, 160, 128, 0.5); box-shadow: 0 0 0px rgba(128, 160, 128, 0.4); }
-        }
-
-        @keyframes text-shimmer {
-            0% { text-shadow: 0 0 5px rgba(128, 160, 128, 0.2); }
-            50% { text-shadow: 0 0 15px rgba(128, 160, 128, 0.6), 0 0 25px rgba(128, 160, 128, 0.4); }
-            100% { text-shadow: 0 0 5px rgba(128, 160, 128, 0.2); }
-        }
-
-        .section-heading-animated {
-            animation: text-shimmer 3s infinite alternate;
-        }
-
-
+        /* Общие стили для контейнера вакансий: светлый фон, легкие тени */
         .vacancies-container {
             display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            flex-direction: column; /* Карточки идут друг под другом */
+            gap: 20px;
+            justify-content: flex-start;
+            background-color: #F8F8F8; /* Очень светлый серый фон */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Очень легкая тень */
+            border: 1px solid #E0E0E0; /* Светлая рамка */
         }
 
+        /* Стили для отдельных карточек вакансий: яркий фон, чистые тени */
         .card {
-            background-color: #ffffff;
-            border: 2px solid #80a080; /* Темно-зеленая граница */
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #FFFFFF; /* Чистый белый фон */
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* Мягкая тень */
+            width: 100%; /* Карточки будут растягиваться на всю ширину */
+            margin-bottom: 0; /* Отступ теперь контролируется gap в container */
             overflow: hidden;
-            transition: all 0.3s ease-in-out;
-            transform: translateY(10px);
-            opacity: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            border: 1px solid #E5E7EB; /* Светлый серый бордер */
         }
 
+        .card:hover {
+            transform: translateY(-3px); /* Чуть более заметный подъем */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12); /* Усиленная тень */
+            border-color: #00796B; /* Акцентный бирюзовый бордер при наведении */
+        }
+
+        /* Стили для заголовка карточки */
         .card-header {
-            background: linear-gradient(to right, #6B8E23, #556B2F); /* from-green-700 to-green-900 */
-            color: #ffffff;
-            padding: 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background-color: #E0F2F1; /* Очень светлый бирюзовый фон */
+            color: #212121; /* Очень темный серый текст для контраста */
+            padding: 15px 20px;
+            border-bottom: 1px solid #B2DFDB; /* Светлая бирюзовая разделительная линия */
+            font-family: 'Orbitron', sans-serif; /* Хакерский шрифт для заголовка */
+            font-size: 1.8em;
+            font-weight: bold;
+            text-shadow: none; /* Без тени текста */
         }
 
         .card-header h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            margin: 0;
+            color: #004D40; /* Темный бирюзовый для заголовка */
         }
 
+        /* Стили для тела карточки */
         .card-body {
-            padding: 1.5rem;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            color: #4a5568; /* text-gray-700 */
+            padding: 20px;
+            color: #333333; /* Очень темный серый текст для основной информации */
+            font-size: 0.95em;
         }
 
-        .card-body p strong {
-            margin-right: 0.5rem;
-            color: #2d3748; /* text-gray-800 */
+        .card-body p {
+            margin-bottom: 8px; /* Отступ между параграфами */
         }
 
+        .card-body strong {
+            color: #00796B; /* Акцентный бирюзовый для выделенных меток */
+            font-weight: 600; /* Более сильное выделение */
+        }
+
+        /* Стили для подвала карточки */
         .card-footer {
-            background-color: #f7fafc; /* bg-gray-100 */
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #4a5568; /* text-gray-600 */
-            border-top: 1px solid #cbd5e0; /* border-t border-gray-300 */
+            background-color: #F0F0F0; /* Светло-серый фон */
+            padding: 15px 20px;
+            text-align: right;
+            border-top: 1px solid #E0E0E0; /* Светлая разделительная линия */
         }
 
         .card-footer p {
-            font-weight: 700; /* font-bold */
-            font-size: 0.875rem; /* text-sm */
+            margin: 0;
+            font-weight: 500;
+            color: #616161; /* Средний серый для даты */
         }
 
+        /* Стили для главного заголовка страницы */
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            @apply text-5xl font-bold text-center mb-10 pb-4;
+            color: #00796B; /* Темный бирюзовый для акцента */
+            text-shadow: none; /* Убрана тень текста */
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #B2DFDB; /* Светлое бирюзовое подчеркивание */
+        }
 
-        .card.is-visible {
-            opacity: 1;
-            transform: translateY(0);
+        /* Стили для сообщения об отсутствии вакансий */
+        .no-data-message {
+            background-color: #F0F0F0; /* Светло-серый фон */
+            border: 1px solid #D0D0D0; /* Светлая рамка */
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            color: #4A5568; /* Темно-серый текст */
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .vacancies-container {
+                padding: 15px;
+            }
+            .card-header {
+                font-size: 1.5em;
+            }
+            .card-body {
+                font-size: 0.9em;
+            }
+            h2 {
+                font-size: 3em;
+            }
         }
     </style>
 
-    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8 border-b-2 border-green-700 pb-4 section-heading-animated">
-        Последние Вакансии
-    </h2>
+    {# Главный заголовок страницы вакансий #}
+    <div class="container mx-auto py-8">
+        <h2>Последние вакансии</h2>
+    </div>
 
-    <div class="vacancies-container">
+    <div class="vacancies-container mx-auto max-w-7xl">
         {% if vacancies %}
             {% for vacancy in vacancies %}
                 <div class="card">
@@ -137,28 +146,7 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p class="text-center text-gray-600 text-lg p-8 content-area-bg rounded-xl shadow-md">Вакансий нет.</p>
+            <p class="no-data-message">Вакансий нет.</p>
         {% endif %}
     </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const vacancyCards = document.querySelectorAll('.vacancies-container .card');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-
-            vacancyCards.forEach(card => {
-                observer.observe(card);
-            });
-        });
-    </script>
 {% endblock %}

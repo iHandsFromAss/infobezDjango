@@ -1,0 +1,224 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Навыки{% endblock %}
+
+{% block content %}
+    <style>
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(0, 255, 255, 0.5); box-shadow: 0 0 0px rgba(0, 255, 255, 0.4); }
+            50% { border-color: rgba(0, 255, 140, 0.8); box-shadow: 0 0 20px rgba(0, 255, 140, 0.6); }
+            100% { border-color: rgba(0, 255, 255, 0.5); box-shadow: 0 0 0px rgba(0, 255, 255, 0.4); }
+        }
+
+        @keyframes text-shimmer {
+            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); }
+            50% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px rgba(255, 255, 255, 0.4); }
+            100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); }
+        }
+
+        /* Общие стили для секций (background, shadow, border) */
+        section {
+            @apply bg-gray-900 rounded-xl shadow-lg mb-8 p-6 transform transition-all duration-500 ease-in-out;
+            border: 2px solid;
+            animation: pulse-border 3s infinite ease-in-out;
+        }
+
+        section:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 255, 140, 0.4);
+        }
+
+        /* Стили для заголовков */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            @apply text-5xl font-bold text-center mb-10 pb-4;
+            color: #00ff88; /* Более насыщенный зеленый */
+            text-shadow: 0 0 15px rgba(0, 255, 140, 0.8), 0 0 25px rgba(0, 255, 140, 0.6);
+            letter-spacing: 0.08em;
+            animation: text-shimmer 2.5s infinite alternate;
+        }
+
+        /* Стили для блока с контентом */
+        .content-area-bg {
+            background: linear-gradient(145deg, #1e2a3a, #0d1a2a);
+            border: 1px solid #004d40;
+            box-shadow: inset 0 0 20px rgba(0, 255, 140, 0.1), 0 0 30px rgba(0, 255, 140, 0.2);
+        }
+
+        /* Анимация появления секций при скролле */
+        .section-hidden {
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+        }
+
+        .section-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        /* Дополнительные стили для графиков и таблиц */
+        .card-layout {
+            border: 1px solid #004d40; /* Более темный зеленый */
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 0 10px rgba(0, 255, 140, 0.3); /* Ярче свечение */
+            background-color: #1a202c; /* Темнее фон карточек */
+            display: flex;
+            flex-direction: column;
+            color: #e2e8f0; /* Светлее текст */
+        }
+
+        .card-layout h3 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.8em; /* Чуть крупнее заголовок */
+            color: #00ff88;
+            text-shadow: 0 0 8px rgba(0, 255, 140, 0.6);
+        }
+
+        .content-section-layout {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px; /* Увеличенный отступ */
+        }
+
+        @media (min-width: 768px) {
+            .content-section-layout {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            .table-container {
+                max-width: 35%; /* Увеличенная ширина для таблицы на больших экранах */
+            }
+            .graph-container {
+                flex: 1;
+            }
+        }
+
+        .table-container {
+            flex: 1;
+            max-width: 100%;
+            overflow-x: auto;
+            max-height: 400px;
+            padding-left: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em; /* Чуть крупнее шрифт таблицы */
+            background-color: #2d3748; /* Темнее фон таблицы */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: #e2e8f0; /* Светлее текст таблицы */
+        }
+
+        table th, table td {
+            padding: 12px 15px; /* Увеличенные паддинги */
+            border: 1px solid #003322; /* Темнее границы */
+            text-align: left;
+        }
+
+        table th {
+            background: linear-gradient(135deg, #005040, #008060); /* Более хакерские градиенты */
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0, 255, 140, 0.4);
+        }
+
+        table tr:hover {
+            background-color: #3d4a5c; /* Темнее фон при наведении */
+            cursor: pointer;
+        }
+
+        .graph-container {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px; /* Минимальная высота для графика */
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .graph-container img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            border-radius: 8px; /* Закругленные углы для изображений */
+            box-shadow: 0 0 15px rgba(0, 255, 140, 0.5); /* Свечение вокруг графиков */
+        }
+
+        .graph-container img:hover {
+            transform: scale(1.03); /* Меньше увеличение при наведении */
+            cursor: pointer;
+        }
+    </style>
+
+    <h2 class="text-3xl font-bold text-gray-100 mb-6 text-center md:text-center px-4">
+        Общая статистика по навыкам
+    </h2>
+
+    <div class="content-area-bg mx-auto px-4 py-8 rounded-lg shadow-lg mb-8 max-w-7xl">
+        {% for section in sections %}
+            <section class="section-hidden py-4">
+                <div class="container mx-auto flex flex-col items-center">
+                    <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">
+                        {{ section.title }}
+                    </h3>
+
+                    <div class="content-section-layout w-full">
+                        <div class="table-container card-layout">
+                            {% if section.html_table %}
+                                {{ section.html_table | safe }}
+                            {% else %}
+                                <p style="text-align: center; padding: 20px;">Таблица отсутствует</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="graph-container card-layout">
+                            {% if section.graph_image %}
+                                <img src="{{ section.graph_image.url }}" alt="График">
+                            {% else %}
+                                <p class="text-center text-gray-500 text-lg">График отсутствует</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% empty %}
+            <p class="text-center text-gray-400 text-xl p-12 bg-gray-800 rounded-xl shadow-md border border-gray-700">Нет данных для отображения.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Анимация появления секций при скролле
+        document.addEventListener("DOMContentLoaded", function() {
+            const sections = document.querySelectorAll('section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('section-hidden');
+                        entry.target.classList.add('section-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // Срабатывает, когда 10% секции видно
+            });
+
+            sections.forEach(section => {
+                section.classList.add('section-hidden');
+                observer.observe(section);
+            });
+        });
+    </script>
+{% endblock %}
