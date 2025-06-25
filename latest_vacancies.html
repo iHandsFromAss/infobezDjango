@@ -1,0 +1,223 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Карьера в ИБ{% endblock %}
+
+{% block content %}
+    <style>
+        /* Здесь добавляем специфичные стили для страницы вакансий,
+           которые могут переопределять или дополнять стили из base.html */
+
+        /* Общие стили для секций (повторяются из base.html для наглядности) */
+        section {
+            @apply bg-gray-900 rounded-lg shadow-xl mb-16 p-8 transform transition-all duration-500 ease-in-out;
+            border: 1px solid #004d00;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+        section:hover {
+            border-color: #00ff00;
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.5), transparent);
+            animation: scan-line 3s infinite linear;
+            opacity: 0.7;
+        }
+
+        /* Заголовки секций (повторяются из base.html для наглядности) */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            @apply text-5xl font-bold text-center mb-10 pb-4 border-b-2;
+            border-color: #008000;
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 2px;
+            background-color: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Стиль для карточек вакансий */
+        .vacancy-card {
+            @apply bg-gray-800 rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 ease-in-out;
+            border: 1px solid #004d00; /* Темно-зеленая рамка */
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1); /* Легкое зеленое свечение */
+        }
+        .vacancy-card:hover {
+            transform: scale(1.005);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4); /* Усиленное свечение на наведении */
+            border-color: #00ff00; /* Ярко-зеленая рамка при наведении */
+        }
+        .vacancy-header {
+            @apply bg-gradient-to-r from-gray-900 to-gray-800 text-lime-300 p-6 flex flex-col md:flex-row items-center justify-between border-b border-gray-700;
+            border-color: rgba(0, 255, 0, 0.2); /* Зеленая разделительная линия */
+        }
+        .vacancy-title {
+            font-family: 'Orbitron', sans-serif; /* Футуристичный шрифт */
+            @apply text-2xl font-bold mb-2 md:mb-0 text-lime-400;
+        }
+        .vacancy-salary {
+            @apply text-xl font-bold bg-gray-900 text-lime-300 px-4 py-1 rounded-full border border-lime-700 shadow-inner;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Небольшое свечение для зарплаты */
+        }
+        .vacancy-details {
+            @apply p-6 grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-300 text-left;
+        }
+        .vacancy-details strong {
+            @apply mr-2 text-gray-50; /* Чуть светлее для выделения */
+            color: #b3ffb3; /* Ярко-зеленый для меток */
+        }
+        .vacancy-description-box {
+            @apply md:col-span-2 pt-4 mt-4 border-t;
+            border-color: rgba(0, 255, 0, 0.2); /* Зеленая разделительная линия */
+            color: #a0a0a0; /* Более приглушенный цвет для длинного текста */
+        }
+        .vacancy-footer {
+            @apply bg-gray-900 p-5 flex flex-col md:flex-row justify-between items-center text-gray-400 border-t;
+            border-color: rgba(0, 255, 0, 0.2); /* Зеленая разделительная линия */
+        }
+        .vacancy-published-date {
+            @apply font-bold text-sm mb-3 md:mb-0 opacity-70;
+            color: #808080; /* Сероватый для даты */
+        }
+
+        /* Кнопки - адаптируем под новый стиль (копируем из base.html) */
+        .btn-primary {
+            @apply bg-gradient-to-r from-lime-500 to-green-600 text-gray-900 px-8 py-3 rounded-md font-bold shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl;
+            border: 1px solid #00ff00; /* Ярко-зеленая рамка */
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.01em;
+            position: relative;
+            overflow: hidden;
+            color: #1a1a1a; /* Темный текст на кнопках */
+        }
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+            transition: all 0.5s ease-out;
+        }
+        .btn-primary:hover:before {
+            top: 100%;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7), 0 0 30px rgba(0, 255, 0, 0.5); /* Более сильное зеленое свечение */
+        }
+
+        /* Анимация появления элементов (повторяется из base.html) */
+        .section-hidden {
+            opacity: 0;
+            transform: translateY(40px);
+            filter: blur(3px);
+        }
+        .section-visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    </style>
+
+    {# Главный заголовок страницы вакансий #}
+    <div class="container mx-auto">
+        <h2 class="section-title">
+            КАРЬЕРА В ИБ
+        </h2>
+    </div>
+
+    {# Секция с карточками вакансий #}
+    <section class="section-hidden">
+        <div class="container mx-auto flex flex-col gap-6"> {# Уменьшаем gap для более плотного размещения #}
+            {% if vacancies %}
+                {% for vacancy in vacancies %}
+                    <div class="vacancy-card">
+                        <div class="vacancy-header">
+                            <h3 class="vacancy-title">{{ vacancy.name }}</h3>
+                            <span class="vacancy-salary">{{ vacancy.salary }}</span>
+                        </div>
+                        <div class="vacancy-details">
+                            <p class="flex items-center"><strong class="mr-2">&#127978;</strong> <span class="text-lime-200">{{ vacancy.company }}</span></p> {# Здание #}
+                            <p class="flex items-center"><strong class="mr-2">&#127760;</strong> <span class="text-lime-200">{{ vacancy.region }}</span></p> {# Глобус #}
+                            <p class="flex items-center md:col-span-2"><strong class="mr-2">&#128161;</strong> <span class="text-lime-200">{{ vacancy.skills }}</span></p> {# Лампочка #}
+
+                            {# Раздел для дополнительных деталей, изначально скрыт #}
+                            <div id="additional-details-{{ forloop.counter }}" class="vacancy-description-box hidden">
+                                <p class="text-gray-400 mb-3 text-sm"><strong>Описание:</strong> Проведение тестирования на проникновение (пентеста) веб-приложений, сетевой инфраструктуры, мобильных приложений. Анализ уязвимостей, составление отчетов и рекомендаций по их устранению.</p>
+                                <p class="text-gray-400 mb-3 text-sm"><strong>Требования:</strong> Опыт работы в пентесте от 2 лет, знание OWASP Top 10, опыт работы с инструментами (Burp Suite, Metasploit, Nmap), понимание сетевых протоколов, навыки программирования на Python/Bash.</p>
+                                <p class="text-gray-400 mb-3 text-sm"><strong>Условия:</strong> Удаленная работа/гибкий график, конкурентная зарплата, возможность обучения и сертификации (OSCP, CEH), дружный коллектив экспертов.</p>
+                                <p class="text-gray-400 text-sm"><strong>Контакты:</strong> Отправляйте резюме на security.hr@example.com</p>
+                            </div>
+                        </div>
+                        <div class="vacancy-footer">
+                            <p class="vacancy-published-date">Опубликовано: {{ vacancy.published_at }}</p>
+                            <button onclick="toggleDetails('additional-details-{{ forloop.counter }}', this)"
+                                    class="btn-primary text-sm">
+                                Подробнее
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-gray-600 text-xl p-12 bg-gray-900 rounded-lg shadow-md border border-gray-700">Нет данных для отображения.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <script>
+        // Функция для переключения видимости дополнительных деталей
+        function toggleDetails(id, button) {
+            const detailsDiv = document.getElementById(id);
+            if (detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                detailsDiv.classList.add('block');
+                button.textContent = 'Скрыть';
+            } else {
+                detailsDiv.classList.remove('block');
+                detailsDiv.classList.add('hidden');
+                button.textContent = 'Подробнее';
+            }
+        }
+
+        // Анимация появления элементов при скролле (повторяется из base.html)
+        document.addEventListener("DOMContentLoaded", function() {
+            const sections = document.querySelectorAll('section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('section-hidden');
+                        entry.target.classList.add('section-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                section.classList.add('section-hidden');
+                observer.observe(section);
+            });
+        });
+    </script>
+{% endblock %}

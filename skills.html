@@ -1,0 +1,148 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Техники Атак{% endblock %}
+
+{% block content %}
+    <style>
+        /* Здесь можно добавить специфичные стили для skills.html, если они нужны */
+
+        /* Общие стили для секций (повторяются из base.html для наглядности) */
+        section {
+            @apply bg-gray-900 rounded-lg shadow-xl mb-16 p-8 transform transition-all duration-500 ease-in-out;
+            border: 1px solid #004d00;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+        section:hover {
+            border-color: #00ff00;
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.5), transparent);
+            animation: scan-line 3s infinite linear;
+            opacity: 0.7;
+        }
+
+        /* Заголовки секций (повторяются из base.html для наглядности) */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            @apply text-5xl font-bold text-center mb-10 pb-4 border-b-2;
+            border-color: #008000;
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 2px;
+            background-color: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Стили для изображений графиков */
+        .graph-image-container {
+            @apply flex-1 flex justify-center items-center h-full p-4 box-border relative overflow-hidden rounded-md;
+            background: rgba(17, 24, 39, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), 0 0 30px rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+        }
+        .graph-image-container:hover {
+            border-color: rgba(0, 255, 0, 0.7);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.6), 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+        .graph-image-container img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            @apply transition-transform duration-300 ease-in-out cursor-pointer rounded-sm;
+            filter: brightness(0.8) contrast(1.2);
+        }
+        .graph-image-container img:hover {
+            transform: scale(1.02);
+            filter: brightness(1) contrast(1);
+        }
+
+        /* Анимация появления секций (повторяется из base.html) */
+        .section-hidden {
+            opacity: 0;
+            transform: translateY(40px);
+            filter: blur(3px);
+        }
+        .section-visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    </style>
+
+    {# Главный заголовок страницы техник атак #}
+    <div class="container mx-auto">
+        <h2 class="section-title">
+            ТЕХНИКИ АТАК
+        </h2>
+    </div>
+
+    {% for section in sections %}
+        {# Каждая секция техник атак #}
+        <section class="section-hidden">
+            <div class="container mx-auto flex flex-col items-center">
+                <h3 class="text-3xl font-bold text-center text-lime-300 mb-6 font-orbitron">
+                    {{ section.title }}
+                </h3>
+
+                <div class="flex flex-col md:flex-row justify-center items-stretch gap-6 w-full">
+                    {# Блок с графиком теперь занимает всю ширину #}
+                    {% if section.graph_image %}
+                        <div class="w-full graph-image-container">
+                            <img src="{{ section.graph_image.url }}" alt="График Техник Атак">
+                        </div>
+                    {% else %}
+                        <div class="w-full flex justify-center items-center p-4">
+                            <p class="text-center text-gray-500 text-lg">График отсутствует</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    {% empty %}
+        <p class="text-center text-gray-600 text-xl p-12 bg-gray-900 rounded-lg shadow-md border border-gray-700">Нет данных для отображения.</p>
+    {% endfor %}
+
+    <script>
+        // Анимация появления секций при скролле (повторяется из base.html)
+        document.addEventListener("DOMContentLoaded", function() {
+            const sections = document.querySelectorAll('section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('section-hidden');
+                        entry.target.classList.add('section-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // Срабатывает, когда 10% секции видно
+            });
+
+            sections.forEach(section => {
+                section.classList.add('section-hidden'); // Добавляем класс для начального скрытия
+                observer.observe(section);
+            });
+        });
+    </script>
+{% endblock %}
